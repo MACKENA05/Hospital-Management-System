@@ -10,31 +10,43 @@ Base = declarative_base()
 class Department(Base):
     __tablename__ = 'departments'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    department_id = Column(Integer, primary_key=True)
+    department_name = Column(String, nullable=False)
+    
     doctors = relationship('Doctor', back_populates='department')
 
 
 class Doctor(Base):
     __tablename__ = 'doctors'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    department_id = Column(Integer, ForeignKey('departments.id'))
+    doctor_id = Column(Integer, primary_key=True)
+    doctor_name = Column(String, nullable=False)
+    department_id = Column(Integer, ForeignKey('departments.department_id'))
+
     department = relationship('Department', back_populates='doctors')
+    appointments = relationship('Appointment', back_populates = 'doctor')
 
 class Patient(Base):
     __tablename__ = 'patients'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    patient_id = Column(Integer, primary_key=True)
+    patient_name = Column(String, nullable=False)
     phone_number = Column(String, nullable=False)
+
+    appointments = relationship('Appointment', back_populates='patient')
 
 class Appointment(Base):
     __tablename__ = 'appointments'
 
-    id = Column(Integer, primary_key=True)
-    doctor_id = Column(Integer, ForeignKey('doctors.id'))
-    patient_id = Column(Integer, ForeignKey('patients.id'))
+    appointment_id = Column(Integer, primary_key=True)
+    doctor_id = Column(Integer, ForeignKey('doctors.doctor_id'))
+    patient_id = Column(Integer, ForeignKey('patients.patient_id'))
     appointment_date = Column(DateTime, nullable=False)
+
+    doctor = relationship('Doctor', back_populates='appointments')
+    patient = relationship('Patient', back_populates='appointments')
     
+Base.metadata.create_all(engine)
+
+SessionLocal = sessionmaker(bind=engine)
+session = SessionLocal()
