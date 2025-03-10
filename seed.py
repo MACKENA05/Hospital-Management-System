@@ -1,6 +1,16 @@
 from models import session,Department,Doctor,Patient,Appointment
 from datetime import datetime
 
+#clearing table before seeding
+def clear_data():
+    session.query(Department).delete()
+    session.query(Patient).delete()
+    session.query(Doctor).delete()
+    session.query(Appointment).delete()
+    session.commit()
+    print("Db cleared")
+
+
 def hosp_data():
 
     #departments 
@@ -39,4 +49,5 @@ def hosp_data():
     print("seeded successfully")
 
 if __name__ == "__main__":
+    clear_data()
     hosp_data()
