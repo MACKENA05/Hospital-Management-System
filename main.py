@@ -105,8 +105,18 @@ def view_appointments():
         for appointment in appointments:
             click.echo(f"{appointment.appointment_id}, Doctor ID: {appointment.doctor_id}, Patient ID: {appointment.patient_id}, Date: {appointment.appointment_date}")
 
-
-
+#Delete department
+def delete_department(department_id):
+    try:
+        department = session.query(Department).filter_by(department_id=department_id).one()
+        session.delete(department)
+        session.commit()
+        click.echo(f"{department.department_name} department deleted successfully")
+    except Exception as e:
+        session.rollback()
+        click.echo("Error deleting the department")
+    finally:
+        session.close()
 
 # Menu System
 def show_menu():
@@ -160,6 +170,9 @@ def menu():
             view_patients()
         elif choice == 8:
             view_appointments()
+        elif choice == 9:
+            department_id = click.prompt("Enter Department ID to delete", type = int)
+            delete_department(department_id)
         
         
         
