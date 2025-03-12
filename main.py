@@ -184,6 +184,58 @@ def update_appointment(appointment_id):
     except Exception as e:
         session.rollback()
         click.echo("Error: Invalid data provided.")
+    finally:
+        session.close()
+
+#view doctors in departments
+def view_doctors_in_department(department_id):
+    try:
+        department = session.query(Department).filter_by(department_id=department_id).one()
+        doctors = session.query(Doctor).filter_by(department_id=department_id).all()
+        if not doctors:
+            click.echo("No doctors found in {department.department_name} department")
+        else:
+            click.echo(f"Doctors in {department.department_name} department")
+            for doctor in doctors:
+                 click.echo(f"Doctor ID:{doctor.doctor_id}, Name: {doctor.doctor_name}")
+    except Exception as e:
+        click.echo("Error viewing doctors in this department")
+    finally:
+        session.close()
+
+#view appointments for doctors
+def view_appointments_for_doctor(doctor_id):
+    try:
+        doctor = session.query(Doctor).filter_by(doctor_id =doctor_id).one()
+        appointments = session.query(Appointment).filter_by(doctor_id=doctor_id).all()
+        if not appointments:
+            click.echo(f"No appointments found for {doctor.doctor_name}")
+        else:
+            click.echo(f"Appointments for {doctor.doctor_name}")
+            for appointment in appointments:
+                click.echo(f"Appointment ID:{appointment.appointment_id}, Patient ID: {appointment.patient_id}, Date: {appointment.appointment_date}")
+    except Exception as e:
+        click.echo("Error fetching appointments ")
+    finally:
+        session.close()
+
+#view appointments for patient
+def view_appointments_for_patient(patient_id):
+    try:
+        patient = session.query(Patient).filter_by(patient_id = patient_id).one()
+        appointments = session.query(Appointment).filter_by(patient_id = patient_id).all()
+        if not appointments:
+            click.echo(f"No appointments for Patient {patient.patient_name}")
+        else:
+            click.echo(f"Appointments for {patient.patient_name}")
+            for appointment in appointments:
+                click.echo(f"  Appointment ID: {appointment.appointment_id}, Doctor ID: {appointment.doctor_id}, Date: {appointment.appointment_date}")
+    except Exception as e:
+        click.echo("Error getting appointments ")
+    finally:
+        session.close()
+
+#List Doctors and Patient for a certain department
 
     
 
@@ -255,6 +307,15 @@ def menu():
         elif choice == 13:
             appointment_id = click.prompt("Enter Appointment ID to update")
             update_appointment(appointment_id)
+        elif choice == 14:
+            department_id = click.prompt("Enter Department ID", type=int)
+            view_doctors_in_department(department_id)
+        elif choice == 15:
+            doctor_id = click.prompt("Enter Doctor ID", type=int) 
+            view_appointments_for_doctor(doctor_id)
+        elif choice == 16:
+            patient_id = click.prompt("Enter Patient ID", type=int)
+            view_appointments_for_patient(patient_id)
 
         
         
