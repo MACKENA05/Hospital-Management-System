@@ -49,23 +49,23 @@ def add_patient(name, phone_number):
     finally:
         session.close()
 
-# def schedule_appointment():
-#     date_time = validate_date(date_time)
-#     if not date_time:
-#         click.echo("Invalid date format.Use 'YYYY-MM-DD HH:MM'.")
-#         return
-#     try:
-#         doctor = session.query(Doctor).filter_by(doctor_id=doctor_id).one()
-#         patient = session.query(Patient).filter_by(patient_id=patient_id).one()
-#         appointment = Appointment(doctor_id=doctor_id,patient_id=patient_id, appointment_date=date_time)
-#         session.add(appointment)
-#         session.commit()
-#         click.echo(f"Appointment for {patient.patient_name}  scheduled on {date} to {doctor.doctor_name} added successfully ")
-#     except Exception as e:
-#         session.rollback()
-#         click.echo(f"Error scheduling the appointment: {e}")
-#     finally:
-#         session.close()
+def schedule_appointment(doctor_id, patient_id,date_time):
+    date_time = validate_date(date_time)
+    if not date_time:
+        click.echo("Invalid date format.Use 'YYYY-MM-DD HH:MM'.")
+        return
+    try:
+        doctor = session.query(Doctor).filter_by(doctor_id=doctor_id).one()
+        patient = session.query(Patient).filter_by(patient_id=patient_id).one()
+        appointment = Appointment(doctor_id=doctor_id,patient_id=patient_id, appointment_date=date_time)
+        session.add(appointment)
+        session.commit()
+        click.echo(f"Appointment for {patient.patient_name}  scheduled on {date_time} with {doctor.doctor_name} added successfully ")
+    except Exception as e:
+        session.rollback()
+        click.echo(f"Error scheduling the appointment: {e}")
+    finally:
+        session.close()
 
 
 
@@ -108,6 +108,11 @@ def menu():
             name = click.prompt("Enter patient name")
             phone_number = click.prompt("Enter patients phone number")
             add_patient(name,phone_number)
+        elif choice == 4:
+            doctor_id = click.prompt("Enter Doctors ID")
+            patient_id = click.prompt("Enter Patient ID")
+            date_time = click.prompt("Enter the Appointment date and time (YYYY-MM-DD HH:MM)")
+            schedule_appointment(doctor_id, patient_id ,date_time)
         
         elif choice == 19:
             click.echo("Ending the session .....")
