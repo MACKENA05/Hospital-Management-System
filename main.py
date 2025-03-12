@@ -257,7 +257,27 @@ def list_doctors_and_appointments(department_id):
                     click.echo(f"  Appointment ID: {appointment.appointment_id}, Patient: {patient.patient_name}, Date: {appointment.appointment_date}")
     except Exception as e:
         click.echo("Error listing doctors and appointments for a certain department")
+
+#search for patient by name
+def search_patient_by_name(name):
+        patients = session.query(Patient).filter(Patient.patient_name.ilike(f"%{name}%")).all()
+        if not patients:
+            click.echo(f"No patient found with name containing {name}")
+        else:
+            for patient in patients:
+                click.echo(f"{patient.patient_id} Name:{patient.patient_name}")
     
+#search Doctor by name
+def search_doctor_by_name(name):
+    doctors = session.query(Doctor).filter(Doctor.doctor_name.ilike(f"%{name}%")).all()
+    if not doctors:
+        click.echo(f"No doctors found with name containing '{name}'.")
+    else:
+        click.echo(f"Doctors found with name containing '{name}':")
+        for doctor in doctors:
+            click.echo(f"ID: {doctor.doctor_id}, Name: {doctor.doctor_name}, Department ID: {doctor.department_id}")
+
+
 
 # Menu System
 def show_menu():
@@ -339,9 +359,12 @@ def menu():
         elif choice == 17:
             department_id = click.prompt("Enter Department ID", type=int)
             list_doctors_and_appointments(department_id)
-        
-        
-        
+        elif choice == 18:
+            name = click.prompt("Enter patient name to search")
+            search_patient_by_name(name)
+        elif choice == 19:
+            name = click.prompt("Enter doctor name to search")
+            search_doctor_by_name(name)
         elif choice == 20:
             click.echo("Ending the session .....")
             break
