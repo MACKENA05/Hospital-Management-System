@@ -78,7 +78,7 @@ def view_departments():
         for department in departments:
             click.echo(f"{department.department_id} Name:{department.department_name}")
     
-#View doctors
+#View  all doctors
 def view_doctors():
     doctors = session.query(Doctor).all()
     if not doctors:
@@ -87,7 +87,7 @@ def view_doctors():
         for doctor in doctors:
             click.echo(f"{doctor.doctor_id}. Name:{doctor.doctor_name} Department:{doctor.department_id}")
 
-#view patients
+#view all patients
 def view_patients():
     patients = session.query(Patient).all()
     if not patients:
@@ -96,7 +96,15 @@ def view_patients():
         for patient in patients:
             click.echo(f"{patient.patient_id}  Name: {patient.patient_name}  PhoneNumber:{patient.phone_number}")
 
-    
+#view all appointments
+def view_appointments():
+    appointments = session.query(Appointment).all()
+    if not appointments:
+        click.echo("No appointments found")
+    else:
+        for appointment in appointments:
+            click.echo(f"{appointment.appointment_id}, Doctor ID: {appointment.doctor_id}, Patient ID: {appointment.patient_id}, Date: {appointment.appointment_date}")
+
 
 
 
@@ -150,6 +158,8 @@ def menu():
             view_doctors()
         elif choice == 7:
             view_patients()
+        elif choice == 8:
+            view_appointments()
         
         
         
