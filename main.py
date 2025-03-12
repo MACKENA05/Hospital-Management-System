@@ -118,6 +118,75 @@ def delete_department(department_id):
     finally:
         session.close()
 
+#delete doctor
+def delete_doctor(doctor_id):
+    try:
+        doctor = session.query(Doctor).filter_by(doctor_id=doctor_id).one()
+        session.delete(doctor)
+        session.commit()
+        click.echo(f"{doctor.doctor_name} deleted successfully")
+    except Exception as e:
+        session.rollback()
+        click.echo("Error deleting the doctor")
+    finally:
+        session.close()
+
+#delete patient
+def delete_patient(patient_id):
+    try:
+        patient = session.query(Patient).filter_by(patient_id=patient_id).one()
+        session.delete(patient)
+        session.commit()
+        click.echo(f"{patient.patient_name} deleted successfully")
+    except Exception as e:
+        session.rollback()
+        click.echo("Error deleting the patient")
+    finally:
+        session.close()
+
+#delete appointment
+def delete_appointment(appointment_id):
+    try:
+        appointment = session.query(Appointment).filter_by(appointment_id=appointment_id).one()
+        session.delete(appointment)
+        session.commit()
+        click.echo(f"Appointment {appointment.appointment_id} deleted successfully")
+    except Exception as e:
+        session.rollback()
+        click.echo("Error deleting the appointment")
+    finally:
+        session.close()
+
+def update_appointment(appointment_id):
+    """Update an existing appointment."""
+    try:
+        appointment = session.query(Appointment).filter_by(appointment_id=appointment_id).one()
+        click.echo(f"Current Appointment Details:")
+        click.echo(f"  Doctor ID: {appointment.doctor_id}")
+        click.echo(f"  Patient ID: {appointment.patient_id}")
+        click.echo(f"  Date/Time: {appointment.appointment_date}")
+
+        # new details prompt
+        new_doctor_id = click.prompt("Enter new doctor ID (or press Enter to keep current)", default=appointment.doctor_id, type=int)
+        new_patient_id = click.prompt("Enter new patient ID (or press Enter to keep current)", default=appointment.patient_id, type=int)
+        new_date_time = click.prompt("Enter new date and time (YYYY-MM-DD HH:MM) (or press Enter to keep current)", default=appointment.appointment_date.strftime("%Y-%m-%d %H:%M"))
+
+        new_date_time = validate_date(new_date_time)
+        if not new_date_time:
+            click.echo("Error: Invalid date format. Use 'YYYY-MM-DD HH:MM'.")
+            return
+
+        appointment.doctor_id = new_doctor_id
+        appointment.patient_id = new_patient_id
+        appointment.appointment_date = new_date_time
+        session.commit()
+        click.echo(f"Appointment ID {appointment_id} updated successfully.")
+    except Exception as e:
+        session.rollback()
+        click.echo("Error: Invalid data provided.")
+
+    
+
 # Menu System
 def show_menu():
     click.echo("\nHospital Management System")
@@ -133,13 +202,14 @@ def show_menu():
     click.echo("10. Delete Doctor")
     click.echo("11. Delete Patient")
     click.echo("12. Delete Appointment")
-    click.echo("13. View Doctors in Department")
-    click.echo("14. View Appointments for Doctor")
-    click.echo("15. View Appointments for Patient")
-    click.echo("16. List Doctors and Appointments for Department")
-    click.echo("17. Search for a Patient by Name")
-    click.echo("18. Search for a Doctor By Name")
-    click.echo("19. Exit")
+    click.echo("13. Update Appointment")
+    click.echo("14. View Doctors in Department")
+    click.echo("15. View Appointments for Doctor")
+    click.echo("16. View Appointments for Patient")
+    click.echo("17. List Doctors and Appointments for Department")
+    click.echo("18. Search for a Patient by Name")
+    click.echo("19. Search for a Doctor By Name")
+    click.echo("20. EXIT")
 
 def menu():
     while True:
@@ -173,10 +243,23 @@ def menu():
         elif choice == 9:
             department_id = click.prompt("Enter Department ID to delete", type = int)
             delete_department(department_id)
+        elif choice == 10:
+            doctor_id = click.prompt("Enter Doctor ID to delete", type = int)
+            delete_doctor(doctor_id)
+        elif choice == 11:
+            patient_id = click.prompt("Enter Patient ID to delete", type = int)
+            delete_patient(patient_id)
+        elif choice == 12:
+            appointment_id = click.prompt("Enter Appointment ID to delete", type = int)
+            delete_appointment(appointment_id)
+        elif choice == 13:
+            appointment_id = click.prompt("Enter Appointment ID to update")
+            update_appointment(appointment_id)
+
         
         
         
-        elif choice == 19:
+        elif choice == 20:
             click.echo("Ending the session .....")
             break
 
