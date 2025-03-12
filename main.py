@@ -236,7 +236,27 @@ def view_appointments_for_patient(patient_id):
         session.close()
 
 #List Doctors and Patient for a certain department
+def list_doctors_and_appointments(department_id):
+    try:
+        department = session.query(Department).filter_by(department_id=department_id).one()
+        click.echo(f"Doctors and appointments in department '{department.department_name}':")
 
+        doctors = session.query(Doctor).filter_by(department_id=department_id).all()
+        if not doctors:
+            click.echo("No doctors found in this department.")
+            return
+
+        for doctor in doctors:
+            click.echo(f"\nDoctor ID: {doctor.doctor_id}, Name: {doctor.doctor_name}")
+            appointments = session.query(Appointment).filter_by(doctor_id=doctor.doctor_id).all()
+            if not appointments:
+                click.echo("  No appointments found for this doctor.")
+            else:
+                for appointment in appointments:
+                    patient = session.query(Patient).filter_by(patient_id=appointment.patient_id).one()
+                    click.echo(f"  Appointment ID: {appointment.appointment_id}, Patient: {patient.patient_name}, Date: {appointment.appointment_date}")
+    except Exception as e:
+        click.echo("Error listing doctors and appointments for a certain department")
     
 
 # Menu System
@@ -316,7 +336,9 @@ def menu():
         elif choice == 16:
             patient_id = click.prompt("Enter Patient ID", type=int)
             view_appointments_for_patient(patient_id)
-
+        elif choice == 17:
+            department_id = click.prompt("Enter Department ID", type=int)
+            list_doctors_and_appointments(department_id)
         
         
         
