@@ -24,6 +24,7 @@ def add_department(name):
     finally:
         session.close
 
+#Adding doctors
 def add_doctor(name,department_id):
     try:
         department = session.query(Department).filter_by(department_id = department_id).one()
@@ -37,6 +38,7 @@ def add_doctor(name,department_id):
     finally:
         session.close()
 
+#adding patients
 def add_patient(name, phone_number):
     try:
         patient = Patient(patient_name = name, phone_number=phone_number)
@@ -48,7 +50,7 @@ def add_patient(name, phone_number):
         click.echo(f"Error adding patient: {e} ")
     finally:
         session.close()
-
+#scheduling an appointment
 def schedule_appointment(doctor_id, patient_id,date_time):
     date_time = validate_date(date_time)
     if not date_time:
@@ -66,6 +68,19 @@ def schedule_appointment(doctor_id, patient_id,date_time):
         click.echo(f"Error scheduling the appointment: {e}")
     finally:
         session.close()
+
+#viewing all departments
+def view_departments():
+    departments = session.query(Department).all()
+    if not departments:
+        click.echo("No department found")
+    else:
+        for department in departments:
+            click.echo(f"ID:{department.department_id}, Name:{department.department_name}")
+    
+#View doctors
+
+    
 
 
 
@@ -113,6 +128,9 @@ def menu():
             patient_id = click.prompt("Enter Patient ID")
             date_time = click.prompt("Enter the Appointment date and time (YYYY-MM-DD HH:MM)")
             schedule_appointment(doctor_id, patient_id ,date_time)
+        elif choice == 5:
+            view_departments()
+        
         
         elif choice == 19:
             click.echo("Ending the session .....")
