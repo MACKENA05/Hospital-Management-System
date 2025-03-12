@@ -1,6 +1,5 @@
 import click
 from models import session, Department, Doctor, Patient, Appointment
-from sqlalchemy.exc import IntegrityError, NoResultFound
 from datetime import datetime
 
 # validation
@@ -10,11 +9,7 @@ def validate_date(date):
     except ValueError:
         return None
     
-# Click Group
-@click.group()
-def cli():
-    """Hospital Management System CLI"""
-    pass
+
 
 # Add Department
 def add_department(name):
@@ -23,11 +18,24 @@ def add_department(name):
         session.add(department)
         session.commit()
         click.echo(f"'{name}' department added successfully.")
-    except IntegrityError:
+    except Exception as e:
         session.rollback()
-        click.echo("Error: Department name must be unique.")
+        click.echo("Error adding department as {e}")
     finally:
         session.close
+
+def add_doctor(name,department_id):
+    try:
+        department = session.query(Department).filter_by(department_id = department_id).one()
+        doctor = Doctor(doctor_name = name, department_id=department_id)
+        session.add(doctor)
+        session.commit()
+        click.echo(f"'{name}' added successfuly in '{department.department_name}' department")
+    except Exception as e:
+        session.roll()
+        click.echo('Error adding Doctor as {e}')
+    finally:
+        session.close()
 
 
 # Menu System
@@ -54,16 +62,26 @@ def show_menu():
     click.echo("19. Exit")
 
 def menu():
-    while true:
+    while True:
         show_menu()
         choice = click.prompt("Enter your choice", type = int)
 
-    if choice == 1:
-        name = click.prompt("Enter department name")
-        add_department(name)
+        if choice == 1:
+            name = click.prompt("Enter department name")
+            add_department(name)
+        elif choice == 2:
+            name = click.prompt("Enter Doctors name")
+            department_id = click.prompt("Enter the department ID")
+            add_doctor(name, department_id)
 
-    else:
-        click.echo("Invalid choice.Try again")
+        else:
+            click.echo("Invalid choice.Try again")
+
+# Click Group
+@click.group()
+def cli():
+    """Hospital Management System CLI"""
+    pass
 
 #menu command
 @cli.command()
